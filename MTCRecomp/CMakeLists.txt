@@ -16,17 +16,17 @@ if (NOT EXISTS "${MTC_RECOMP_DIR}/RecompiledFuncs/funcs.h")
     message(FATAL_ERROR "No recompiled code in ${MTC_RECOMP_DIR}/RecompiledFuncs. Run N64Recomp first.")
 endif()
 
-if (CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|amd64|AMD64")
-    set(MTC_SIMD_FLAGS -msse4.1)
-endif()
-
 # ---- Runtime -----------------------------------------------------------------
 add_subdirectory(${MTC_RUNTIME_DIR} ${CMAKE_BINARY_DIR}/N64ModernRuntime)
 
 # ---- RT64 Renderer -----------------------------------------------------------
 set(RT64_STATIC TRUE CACHE BOOL "" FORCE)
-set(RT64_SDL_WINDOW_VULKAN TRUE CACHE BOOL "" FORCE)
-add_compile_definitions(HLSL_CPU RT64_SDL_WINDOW_VULKAN)
+if (WIN32)
+    add_compile_definitions(HLSL_CPU)
+else()
+    set(RT64_SDL_WINDOW_VULKAN TRUE CACHE BOOL "" FORCE)
+    add_compile_definitions(HLSL_CPU RT64_SDL_WINDOW_VULKAN)
+endif()
 add_subdirectory(${MTC_RT64_DIR} ${CMAKE_BINARY_DIR}/rt64)
 target_include_directories(rt64 PRIVATE ${CMAKE_BINARY_DIR}/rt64/src)
 
@@ -41,11 +41,28 @@ target_include_directories(MTCRecompiledFuncs PRIVATE
     "${MTC_RUNTIME_DIR}/librecomp/include"
     "${MTC_RUNTIME_DIR}/ultramodern/include"
 )
-target_compile_options(MTCRecompiledFuncs PRIVATE -fno-strict-aliasing -Wno-everything)
+if (MSVC)
+    target_compile_options(MTCRecompiledFuncs PRIVATE /W0)
+else()
+    target_compile_options(MTCRecompiledFuncs PRIVATE -fno-strict-aliasing -Wno-everything)
+endif()
 
 # ---- SDL2 & Threads ----------------------------------------------------------
 find_package(Threads REQUIRED)
-find_package(SDL2 REQUIRED)
+
+if (WIN32)
+    set(SDL2_DIR "${MTC_RT64_DIR}/src/contrib/mupen64plus-win32-deps/SDL2-2.26.3")
+    set(SDL2_INCLUDE_DIRS "${SDL2_DIR}/include")
+    add_library(SDL2::SDL2 UNKNOWN IMPORTED)
+    set_target_properties(SDL2::SDL2 PROPERTIES
+        IMPORTED_LOCATION "${SDL2_DIR}/lib/x64/SDL2.dll"
+        IMPORTED_IMPLIB "${SDL2_DIR}/lib/x64/SDL2.lib"
+        INTERFACE_INCLUDE_DIRECTORIES "${SDL2_INCLUDE_DIRS}"
+    )
+    set(SDL2_DLL "${SDL2_DIR}/lib/x64/SDL2.dll")
+else()
+    find_package(SDL2 REQUIRED)
+endif()
 
 # ---- Executable --------------------------------------------------------------
 add_executable(MTCRecompiled
@@ -55,17 +72,11 @@ add_executable(MTCRecompiled
     src/sdl_audio.cpp
     src/rt64_render_context.cpp
     ../recomp/rsp/aspMain.cpp
-    src/hle_audio.cpp
-    src/hle_audio/alist.c
-    src/hle_audio/alist_audio.c
-    src/hle_audio/audio.c
-    src/hle_audio/memory.c
     src/mtc_hle_stubs.cpp
 )
 
 target_include_directories(MTCRecompiled PRIVATE
     src
-    src/hle_audio
     "${MTC_RECOMP_DIR}"
     "${MTC_RUNTIME_DIR}/librecomp/include/librecomp"
     "${MTC_RUNTIME_DIR}/N64Recomp/include"
@@ -80,7 +91,15 @@ target_include_directories(MTCRecompiled PRIVATE
     ${SDL2_INCLUDE_DIRS}
 )
 
-target_compile_options(MTCRecompiled PRIVATE ${MTC_SIMD_FLAGS} -fno-strict-aliasing)
+if (MSVC)
+    target_compile_options(MTCRecompiled PRIVATE /permissive-)
+else()
+    if (CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|amd64|AMD64")
+        set(MTC_SIMD_FLAGS -msse4.1)
+    endif()
+    target_compile_options(MTCRecompiled PRIVATE ${MTC_SIMD_FLAGS} -fno-strict-aliasing)
+endif()
+
 target_link_libraries(MTCRecompiled PRIVATE
     MTCRecompiledFuncs
     librecomp
@@ -88,6 +107,17 @@ target_link_libraries(MTCRecompiled PRIVATE
     rt64
     SDL2::SDL2
     Threads::Threads
-    atomic
-    ${CMAKE_DL_LIBS}
 )
+
+if (NOT MSVC)
+    target_link_libraries(MTCRecompiled PRIVATE atomic ${CMAKE_DL_LIBS})
+endif()
+
+if (WIN32)
+    add_custom_command(
+        TARGET MTCRecompiled POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${SDL2_DLL}"
+            "$<TARGET_FILE_DIR:MTCRecompiled>"
+    )
+endif()

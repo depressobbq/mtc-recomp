@@ -23,6 +23,8 @@ mtc_data/
 *.jpeg
 *.bmp
 *.tga
+!packaging/*.png
+!packaging/*.svg
 frame_*
 new_frame_*
 screen*

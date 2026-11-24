@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Magical Tetris Challenge
+Comment=Magical Tetris Challenge: Recompiled (Nintendo 64)
+Exec=MTCRecompiled
+Icon=mtc
+Terminal=false
+Categories=Game;ArcadeGame;
+StartupNotify=true

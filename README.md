@@ -2,6 +2,13 @@
 
 A native PC port of **Magical Tetris Challenge** (Nintendo 64) created via static binary recompilation using the [N64Recomp](https://github.com/N64Recomp/N64Recomp) toolchain.
 
+## Releases
+
+Pre-built binaries for **Windows (x64)** and **Linux (AppImage)** are automatically built on every commit and release via GitHub Actions:
+
+- **Windows:** Download `MagicalTetrisChallenge-Windows-x64.zip` from the [Releases](https://github.com/depressobbq/mtc-decomp/releases) page or the GitHub Actions artifacts, extract, supply your ROM, and run `MTCRecompiled.exe`.
+- **Linux:** Download `MagicalTetrisChallenge-Linux-x86_64.AppImage`, make it executable (`chmod +x ...`), and launch with your ROM in the same directory or via command line.
+
 ## Features
 
 - **Native Linux Executable:** High-performance, low-latency native execution without traditional N64 CPU emulation overhead.

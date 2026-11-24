@@ -16,7 +16,7 @@ if [ ! -f "$RUNTIME_DIR/CMakeLists.txt" ]; then
     git -C "$RUNTIME_DIR" submodule update --init --recursive
     if [ -f "$PATCH_DIR/runtime-threadqueue.patch" ]; then
         echo "==> Applying runtime-threadqueue.patch..."
-        (cd "$RUNTIME_DIR" && patch -p1 < "$PATCH_DIR/runtime-threadqueue.patch")
+        git -C "$RUNTIME_DIR" apply --ignore-whitespace --whitespace=nowarn "$PATCH_DIR/runtime-threadqueue.patch"
     fi
 else
     echo "==> N64ModernRuntime already present at $RUNTIME_DIR"
@@ -31,7 +31,7 @@ if [ ! -f "$RT64_DIR/CMakeLists.txt" ]; then
     git -C "$RT64_DIR" submodule update --init --recursive
     if [ -f "$PATCH_DIR/rt64-s2dex.patch" ]; then
         echo "==> Applying rt64-s2dex.patch..."
-        (cd "$RT64_DIR" && patch -p1 < "$PATCH_DIR/rt64-s2dex.patch")
+        git -C "$RT64_DIR" apply --ignore-whitespace --whitespace=nowarn "$PATCH_DIR/rt64-s2dex.patch"
     fi
 else
     echo "==> RT64 already present at $RT64_DIR"

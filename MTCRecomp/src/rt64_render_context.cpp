@@ -121,7 +121,11 @@ namespace mtc {
             auto cfg = ultramodern::renderer::get_graphics_config();
 
             RT64::Application::Core appCore{};
+#ifdef _WIN32
+            appCore.window = window_handle.window;
+#else
             appCore.window = window_handle;
+#endif
             appCore.checkInterrupts = dummy_check_interrupts;
             appCore.MI_INTR_REG = &MI_INTR_REG;
             appCore.DPC_START_REG = &DPC_START_REG;
@@ -180,11 +184,13 @@ namespace mtc {
             app->enhancementConfig.rect.fixRectLR = true;
             app->updateEnhancementConfig();
 
-            std::filesystem::path dump_dir = "/home/jedi404/Projects/mtc-recomp/dumped_textures";
-            std::error_code ec;
-            std::filesystem::create_directories(dump_dir, ec);
-            app->state->dumpingTexturesDirectory = dump_dir;
-            printf("[gfx] Texture dumping enabled to %s\n", dump_dir.string().c_str());
+            if (developer_mode) {
+                std::filesystem::path dump_dir = "dumped_textures";
+                std::error_code ec;
+                std::filesystem::create_directories(dump_dir, ec);
+                app->state->dumpingTexturesDirectory = dump_dir;
+                printf("[gfx] Texture dumping enabled to %s\n", dump_dir.string().c_str());
+            }
         }
 
         ~RT64Context() override = default;

@@ -1,0 +1,138 @@
+name: Build and Release
+
+on:
+  push:
+    branches: [ "main" ]
+    tags: [ "v*" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows:
+    name: Windows x64
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup dependencies
+        shell: bash
+        run: ./setup_dependencies.sh
+
+      - name: Configure CMake
+        run: >
+          cmake -B MTCRecomp/build -S MTCRecomp
+          -G "Visual Studio 17 2022" -A x64
+          -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build MTCRecompiled
+        run: cmake --build MTCRecomp/build --config Release --parallel
+
+      - name: Package Windows Release
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path dist/MagicalTetrisChallenge-Windows-x64
+          Copy-Item MTCRecomp/build/Release/MTCRecompiled.exe dist/MagicalTetrisChallenge-Windows-x64/
+          Copy-Item MTCRecomp/build/Release/SDL2.dll dist/MagicalTetrisChallenge-Windows-x64/
+          
+          @"
+          Magical Tetris Challenge - PC Port (Recompiled)
+          =============================================
+
+          Quick Start:
+          1. Place your legally acquired ROM ("baserom.us.z64" or in a "roms/" folder).
+          2. Launch MTCRecompiled.exe.
+
+          Controls (Player 1):
+          - Keyboard:
+            * Arrow Keys: D-Pad
+            * W / A / S / D: Analog Stick
+            * Space / X: A Button (Rotate Right)
+            * C: B Button (Rotate Left)
+            * Z: Z Trigger (Hard Drop)
+            * Enter: Start
+            * Q / E: L / R Triggers
+            * I / J / K / L: C-Buttons
+            * Alt + Enter: Fullscreen Toggle
+          - Gamepad:
+            * Standard Xbox, PlayStation, or Switch controllers are automatically mapped.
+          "@ | Out-File -FilePath dist/MagicalTetrisChallenge-Windows-x64/README.txt -Encoding utf8
+
+          Compress-Archive -Path dist/MagicalTetrisChallenge-Windows-x64/* -DestinationPath MagicalTetrisChallenge-Windows-x64.zip
+
+      - name: Upload Windows Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: MagicalTetrisChallenge-Windows-x64
+          path: MagicalTetrisChallenge-Windows-x64.zip
+          retention-days: 14
+
+  build-linux-appimage:
+    name: Linux AppImage
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install build tools and libraries
+        run: |
+          sudo apt update
+          sudo apt install -y build-essential cmake ninja-build libsdl2-dev libvulkan-dev vulkan-tools libgtk-3-dev
+
+      - name: Setup dependencies
+        run: ./setup_dependencies.sh
+
+      - name: Build MTCRecompiled
+        run: |
+          cmake -B MTCRecomp/build -S MTCRecomp -G Ninja -DCMAKE_BUILD_TYPE=Release
+          ninja -C MTCRecomp/build
+
+      - name: Package AppImage
+        env:
+          APPIMAGE_EXTRACT_AND_RUN: 1
+        run: |
+          wget -q https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
+          chmod +x linuxdeploy-x86_64.AppImage
+          
+          ./linuxdeploy-x86_64.AppImage --appdir AppDir \
+            -e MTCRecomp/build/MTCRecompiled \
+            -d packaging/mtc.desktop \
+            -i packaging/mtc.png \
+            --output appimage
+          
+          mv Magical_Tetris_Challenge*.AppImage MagicalTetrisChallenge-Linux-x86_64.AppImage
+          chmod +x MagicalTetrisChallenge-Linux-x86_64.AppImage
+
+      - name: Upload Linux AppImage Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: MagicalTetrisChallenge-Linux-x86_64
+          path: MagicalTetrisChallenge-Linux-x86_64.AppImage
+          retention-days: 14
+
+  release:
+    name: Publish GitHub Release
+    needs: [build-windows, build-linux-appimage]
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            artifacts/MagicalTetrisChallenge-Windows-x64/MagicalTetrisChallenge-Windows-x64.zip
+            artifacts/MagicalTetrisChallenge-Linux-x86_64/MagicalTetrisChallenge-Linux-x86_64.AppImage
+          generate_release_notes: true

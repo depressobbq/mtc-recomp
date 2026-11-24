@@ -13,6 +13,10 @@
 #include <vector>
 
 #define SDL_MAIN_HANDLED
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#endif
 #include "SDL.h"
 #include "SDL_syswm.h"
 
@@ -273,7 +277,11 @@ mtc::Backend mtc::make_backend(int argc, char** argv) {
     cfg.res_option = Resolution::Auto;
     cfg.wm_option = WindowMode::Windowed;
     cfg.hr_option = HUDRatioMode::Original;
+#ifdef _WIN32
+    cfg.api_option = GraphicsApi::Auto;
+#else
     cfg.api_option = GraphicsApi::Vulkan;
+#endif
     cfg.ar_option = AspectRatio::Original;
     cfg.msaa_option = Antialiasing::MSAA4X;
     cfg.rr_option = RefreshRate::Display;

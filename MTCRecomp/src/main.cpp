@@ -28,7 +28,11 @@ static void mtc_on_init(uint8_t* rdram, recomp_context*) {
     osViSetMode(rdram, osViModeNtscLan1_addr);
 }
 
+#ifdef _WIN32
+static const recomp::Version project_version{ 1, 0, 0, "-windows" };
+#else
 static const recomp::Version project_version{ 1, 0, 0, "-linux" };
+#endif
 
 static std::string get_game_thread_name(const OSThread* t) {
     std::string name = "[MTC] ";
@@ -103,7 +107,8 @@ int main(int argc, char** argv) {
             "../roms/Magical Tetris Challenge (USA).z64",
             "baserom.us.z64",
             "../baserom.us.z64",
-            "/home/jedi404/Projects/MTC-DECOMP/roms/Magical Tetris Challenge (USA).z64"
+            "Magical Tetris Challenge (USA).z64",
+            "baserom.z64"
         };
         for (const auto& candidate : candidates) {
             if (std::filesystem::exists(candidate)) {
