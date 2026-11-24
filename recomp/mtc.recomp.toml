@@ -1,0 +1,44 @@
+[input]
+entrypoint = 0x80000400
+symbols_file_path = "mtc.syms.toml"
+rom_file_path = "/home/jedi404/Projects/MTC-DECOMP/roms/Magical Tetris Challenge (USA).z64"
+output_func_path = "RecompiledFuncs"
+uses_mips3_float_mode = false
+bss_section_suffix = ".bss"
+
+[patches]
+stubs = [
+    # TLB / MMU functions (no-op on PC)
+    "func_80057E00",
+    "func_80057E74",
+    "func_800616C0",
+    "func_80068B20",
+    "func_80068BE0",
+    "func_80068C90",
+    "func_8006D4A0",
+    # MIPS CPU Cache management (no-op on modern PC coherent caches)
+    "func_80061540",
+    "func_80061710",
+    # Hardware interrupt / exception dispatcher (handled by OS runtime)
+    "func_80067EF0",
+    "func_8006847C",
+    "func_800686CC",
+    # Hardware MMIO register access functions (no physical N64 hardware on PC)
+    "func_80067710",
+    "func_800677D0",
+    "func_80067BC0",
+    "func_8006856C",
+    "func_80068FC0",
+    "func_80068FE0",
+    "func_80069000",
+    "func_80069010",
+    "func_80069050",
+    "func_80069150",
+    "func_80069460",
+    "func_80069500",
+    "func_800697C0",
+    "func_8006AEA0",
+    "func_8006B1A0",
+    "func_8006B330"
+]
+ignored = []

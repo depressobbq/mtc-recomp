@@ -1,0 +1,11 @@
+# Magical Tetris Challenge (USA) audio microcode
+text_offset = 0x6E170          # ROM offset of ucode text (vram 0x8006D570)
+text_size = 0xC60
+text_address = 0x04001080      # IMEM load address after rspboot
+rom_file_path = "/home/jedi404/Projects/mtc-recomp/baserom.us.z64"
+output_file_path = "./aspMain.cpp"
+output_function_name = "aspMain"
+extra_indirect_branch_targets = [
+    0x10EC, 0x119C, 0x11C8, 0x1208, 0x1248, 0x127C, 0x12D4, 0x1348,
+    0x1384, 0x139C, 0x17EC, 0x1A64, 0x1C84,
+]

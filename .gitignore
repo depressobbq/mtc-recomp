@@ -1,0 +1,33 @@
+# ROM files and game assets (never commit copyrighted ROM data)
+*.z64
+*.n64
+*.v64
+baserom.*
+roms/
+mtc_data/
+
+# Build artifacts
+build/
+MTCRecomp/build/
+bin/
+out/
+MTCRecompiled
+*.o
+*.a
+*.so
+*.dylib
+*.exe
+*.elf
+
+# Downloaded library dependencies (fetched via setup_dependencies.sh)
+lib/rt64/
+lib/N64ModernRuntime/
+
+# Texture dumps and temporary debug files
+dumped_textures/
+*.log
+*.swp
+*.bak
+.cache/
+.vscode/
+.idea/
