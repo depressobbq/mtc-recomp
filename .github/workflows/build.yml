@@ -32,9 +32,17 @@ jobs:
       - name: Build MTCRecompiled
         shell: bash
         run: |
-          cmake --build MTCRecomp/build --config Release --target MTCRecompiled --parallel || {
-            echo "::error::Build failed, running verbose build to show details..."
-            cmake --build MTCRecomp/build --config Release --target MTCRecompiled -- -verbosity:detailed
+          set -o pipefail
+          cmake --build MTCRecomp/build --config Release --target MTCRecompiled --parallel 2>&1 | tee build.log || {
+            echo "### Build Failed" >> "$GITHUB_STEP_SUMMARY"
+            echo "#### Error lines:" >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+            grep -E -i -C 2 '(error |fatal|failed|lnk[0-9]+|c[0-9]{4}:)' build.log | head -n 60 >> "$GITHUB_STEP_SUMMARY" || true
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+            echo "#### Last 80 lines of output:" >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+            tail -n 80 build.log >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
             exit 1
           }
 
