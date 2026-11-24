@@ -47,9 +47,14 @@ jobs:
         run: |
           New-Item -ItemType Directory -Force -Path dist/MagicalTetrisChallenge-Windows-x64
           $exe = (Get-ChildItem -Path MTCRecomp/build -Filter "MTCRecompiled.exe" -Recurse | Select-Object -First 1).FullName
-          $dll = (Get-ChildItem -Path . -Filter "SDL2.dll" -Recurse | Select-Object -First 1).FullName
+          $exeDir = Split-Path -Parent $exe
+          Get-ChildItem -Path $exeDir -Filter "*.dll" | ForEach-Object {
+              Copy-Item $_.FullName dist/MagicalTetrisChallenge-Windows-x64/ -Force
+          }
+          Get-ChildItem -Path lib/rt64/src/contrib/dxc/bin/x64 -Filter "*.dll" | ForEach-Object {
+              Copy-Item $_.FullName dist/MagicalTetrisChallenge-Windows-x64/ -Force
+          }
           Copy-Item $exe dist/MagicalTetrisChallenge-Windows-x64/MTCRecompiled.exe
-          Copy-Item $dll dist/MagicalTetrisChallenge-Windows-x64/SDL2.dll
           
           @"
           Magical Tetris Challenge - PC Port (Recompiled)

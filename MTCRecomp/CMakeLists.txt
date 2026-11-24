@@ -124,10 +124,17 @@ endif()
 
 if (WIN32)
     target_link_directories(MTCRecompiled PRIVATE "${SDL2_DIR}/lib/x64")
+    set(DXC_BIN_DIR "${MTC_RT64_DIR}/src/contrib/dxc/bin/x64")
     add_custom_command(
         TARGET MTCRecompiled POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
             "${SDL2_DLL}"
+            "$<TARGET_FILE_DIR:MTCRecompiled>"
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${DXC_BIN_DIR}/dxcompiler.dll"
+            "$<TARGET_FILE_DIR:MTCRecompiled>"
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${DXC_BIN_DIR}/dxil.dll"
             "$<TARGET_FILE_DIR:MTCRecompiled>"
     )
 endif()
