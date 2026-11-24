@@ -1,8 +1,8 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index fc06930..2dd6c60 100644
+index fc06930..2d69203 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -22,7 +22,7 @@ if (NOT ${RT64_STATIC})
+@@ -22,14 +22,14 @@ if (NOT ${RT64_STATIC})
  endif()
  
  function(preprocess INFILE OUTFILE OPTIONS)
@@ -11,6 +11,14 @@ index fc06930..2dd6c60 100644
          if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
              add_custom_command(OUTPUT ${OUTFILE}
                  COMMAND clang -x c -E -P ${INFILE} -o ${OUTFILE} ${OPTIONS}
+                 DEPENDS ${INFILE})
+         else()
+             add_custom_command(OUTPUT ${OUTFILE}
+-                COMMAND ${CMAKE_CXX_COMPILER} /Zs /EP ${INFILE} ${OPTIONS} > ${OUTFILE}
++                COMMAND ${CMAKE_CXX_COMPILER} /nologo /EP /P "/Fi${OUTFILE}" "/Tc${INFILE}" ${OPTIONS}
+                 DEPENDS ${INFILE})
+         endif()
+     else()
 @@ -60,9 +60,9 @@ elseif (APPLE)
      endif()
  else()
