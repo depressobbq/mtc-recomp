@@ -61,7 +61,7 @@ find_package(Threads REQUIRED)
 if (WIN32)
     set(SDL2_DIR "${MTC_RT64_DIR}/src/contrib/mupen64plus-win32-deps/SDL2-2.26.3")
     set(SDL2_INCLUDE_DIRS "${SDL2_DIR}/include")
-    add_library(SDL2::SDL2 UNKNOWN IMPORTED)
+    add_library(SDL2::SDL2 SHARED IMPORTED)
     set_target_properties(SDL2::SDL2 PROPERTIES
         IMPORTED_LOCATION "${SDL2_DIR}/lib/x64/SDL2.dll"
         IMPORTED_IMPLIB "${SDL2_DIR}/lib/x64/SDL2.lib"
