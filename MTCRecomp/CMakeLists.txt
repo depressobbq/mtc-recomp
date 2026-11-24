@@ -61,6 +61,7 @@ find_package(Threads REQUIRED)
 if (WIN32)
     set(SDL2_DIR "${MTC_RT64_DIR}/src/contrib/mupen64plus-win32-deps/SDL2-2.26.3")
     set(SDL2_INCLUDE_DIRS "${SDL2_DIR}/include")
+    link_directories("${SDL2_DIR}/lib/x64")
     add_library(SDL2::SDL2 SHARED IMPORTED)
     set_target_properties(SDL2::SDL2 PROPERTIES
         IMPORTED_LOCATION "${SDL2_DIR}/lib/x64/SDL2.dll"
@@ -122,6 +123,7 @@ if (NOT MSVC)
 endif()
 
 if (WIN32)
+    target_link_directories(MTCRecompiled PRIVATE "${SDL2_DIR}/lib/x64")
     add_custom_command(
         TARGET MTCRecompiled POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
