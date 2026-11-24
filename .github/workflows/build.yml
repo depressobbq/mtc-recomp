@@ -14,7 +14,7 @@ permissions:
 jobs:
   build-windows:
     name: Windows x64
-    runs-on: windows-latest
+    runs-on: windows-2022
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -36,8 +36,10 @@ jobs:
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force -Path dist/MagicalTetrisChallenge-Windows-x64
-          Copy-Item MTCRecomp/build/Release/MTCRecompiled.exe dist/MagicalTetrisChallenge-Windows-x64/
-          Copy-Item MTCRecomp/build/Release/SDL2.dll dist/MagicalTetrisChallenge-Windows-x64/
+          $exe = (Get-ChildItem -Path MTCRecomp/build -Filter "MTCRecompiled.exe" -Recurse | Select-Object -First 1).FullName
+          $dll = (Get-ChildItem -Path MTCRecomp/build -Filter "SDL2.dll" -Recurse | Select-Object -First 1).FullName
+          Copy-Item $exe dist/MagicalTetrisChallenge-Windows-x64/MTCRecompiled.exe
+          Copy-Item $dll dist/MagicalTetrisChallenge-Windows-x64/SDL2.dll
           
           @"
           Magical Tetris Challenge - PC Port (Recompiled)
