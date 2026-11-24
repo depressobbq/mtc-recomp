@@ -221,8 +221,8 @@ namespace mtc {
             uint64_t count = ++mtc_dl_count;
             if (count <= 10 || (count % 300 == 0)) {
                 const char* ucode_str = (const char*)(app->core.RDRAM + (task->t.ucode_data & 0x3FFFFFF));
-                printf("[gfx] send_dl #%lu: ucode=0x%08x, data=0x%08x, dl=0x%08x (tag: %.32s)\n",
-                       count, (uint32_t)task->t.ucode, (uint32_t)task->t.ucode_data, (uint32_t)task->t.data_ptr, ucode_str);
+                printf("[gfx] send_dl #%llu: ucode=0x%08x, data=0x%08x, dl=0x%08x (tag: %.32s)\n",
+                       (unsigned long long)count, (uint32_t)task->t.ucode, (uint32_t)task->t.ucode_data, (uint32_t)task->t.data_ptr, ucode_str);
             }
             app->state->rsp->reset();
             app->interpreter->loadUCodeGBI(task->t.ucode & 0x3FFFFFF, task->t.ucode_data & 0x3FFFFFF, true);
