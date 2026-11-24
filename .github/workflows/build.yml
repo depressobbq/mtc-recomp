@@ -34,12 +34,11 @@ jobs:
         run: |
           set -o pipefail
           cmake --build MTCRecomp/build --config Release --target MTCRecompiled --parallel 2>&1 | tee build.log || {
-            grep -E -i '(error |fatal|lnk[0-9]{4}|c[0-9]{4}:)' build.log | tail -n 30 | while IFS= read -r line; do
-              echo "::error title=BuildError::$line"
-            done
-            tail -n 60 build.log | while IFS= read -r line; do
-              echo "::warning title=Tail::$line"
-            done
+            ERRORS=$(grep -E -i '(fatal error|error C[0-9]{4}|error LNK[0-9]{4}|LINK : fatal|ninja: build stopped)' build.log | tail -n 25)
+            TAIL_LINES=$(tail -n 40 build.log)
+            MSG="=== ERRORS ===%0A${ERRORS//$'\n'/'%0A'}%0A=== TAIL ===%0A${TAIL_LINES//$'\n'/'%0A'}"
+            MSG="${MSG//$'\r'/}"
+            echo "::error title=BuildFailure::$MSG"
             exit 1
           }
 
