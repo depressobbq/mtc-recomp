@@ -30,7 +30,7 @@ jobs:
           -DCMAKE_BUILD_TYPE=Release
 
       - name: Build MTCRecompiled
-        run: cmake --build MTCRecomp/build --config Release --parallel
+        run: cmake --build MTCRecomp/build --config Release --parallel -- -verbosity:normal
 
       - name: Package Windows Release
         shell: pwsh
