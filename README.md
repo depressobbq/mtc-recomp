@@ -2,64 +2,65 @@
 
 A native PC port of **Magical Tetris Challenge** (Nintendo 64) created via static binary recompilation using the [N64Recomp](https://github.com/N64Recomp/N64Recomp) toolchain.
 
-## Releases
+## Downloads
 
-Pre-built binaries for **Windows (x64)** and **Linux (AppImage)** are automatically built on every commit and release via GitHub Actions:
+Grab the latest build for Windows or Linux from the [Releases](https://github.com/depressobbq/mtc-decomp/releases) page.
 
-- **Windows:** Download `MagicalTetrisChallenge-Windows-x64.zip` from the [Releases](https://github.com/depressobbq/mtc-decomp/releases) page or the GitHub Actions artifacts, extract, supply your ROM, and run `MTCRecompiled.exe`.
-- **Linux:** Download `MagicalTetrisChallenge-Linux-x86_64.AppImage`, make it executable (`chmod +x ...`), and launch with your ROM in the same directory or via command line.
+- **Windows (x64):** Download the zip archive, extract it anywhere, place your ROM in the folder, and run `MTCRecompiled.exe`.
+- **Linux:** Download the `.AppImage`, make it executable (`chmod +x`), and run it with your ROM in the directory.
 
 ## Features
 
-- **Native Linux Executable:** High-performance, low-latency native execution without traditional N64 CPU emulation overhead.
-- **Vulkan Graphics Backend (RT64):** Enhanced rendering pipeline with custom fixes for Nintendo's S2DEX 2D sprite microcode (pixel-perfect background slicing and color-indexed rendering).
-- **Accurate RSP Audio (RSPRecomp):** The game's custom audio microcode (`aspMain`) is statically translated into native C++, reproducing the original Capcom sound effects and soundtrack with zero HLE inaccuracies.
-- **SDL2 Audio & Input:** Low-latency 48,000 Hz audio streaming with dynamic rate control, full gamepad support (SDL GameController), and keyboard mapping.
+- **Native Execution:** High-performance native PC binary without traditional CPU emulation overhead.
+- **Enhanced Graphics (RT64):** Direct3D 12 and Vulkan rendering backends with custom fixes for Nintendo's S2DEX 2D sprite microcode (pixel-perfect background slicing and color-indexed rendering).
+- **Accurate Audio (RSPRecomp):** Custom RSP audio microcode (`aspMain`) statically translated into native C++, reproducing the original soundtrack and sound effects with zero HLE inaccuracies.
+- **SDL2 Audio & Controller Support:** Dynamic audio rate matching, full gamepad support with standard controller mappings, and customizable keyboard controls.
 
 ---
 
-## Prerequisites (Linux)
+## Building from Source
 
-Install the required build tools and libraries (Ubuntu/Debian example):
+### Prerequisites
 
+**Ubuntu / Debian:**
 ```bash
 sudo apt update
 sudo apt install build-essential cmake ninja-build libsdl2-dev libvulkan-dev vulkan-tools libgtk-3-dev
 ```
 
-On Arch Linux:
+**Arch Linux:**
 ```bash
 sudo pacman -S base-devel cmake ninja sdl2 vulkan-headers vulkan-icd-loader gtk3
 ```
 
-A Vulkan-compatible graphics driver (Mesa RADV, NVIDIA proprietary driver, or Intel ANV) is required.
+**Windows:**
+- Visual Studio 2022 (with the "Desktop development with C++" workload)
+- CMake 3.20+ and Git
 
----
+### Build Instructions
 
-## Building
+**Linux:**
+```bash
+git clone https://github.com/depressobbq/mtc-decomp.git
+cd mtc-decomp
+./build.sh
+```
 
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/depressobbq/mtc-decomp.git
-   cd mtc-decomp
-   ```
-
-2. **Set up dependencies & build:**
-   ```bash
-   ./build.sh
-   ```
-   *`build.sh` automatically fetches `N64ModernRuntime` and `RT64` with submodules, applies project patches, and compiles the executable with Ninja.*
+**Windows:**
+```bash
+git clone https://github.com/depressobbq/mtc-decomp.git
+cd mtc-decomp
+./setup_dependencies.sh
+cmake -B MTCRecomp/build -S MTCRecomp
+cmake --build MTCRecomp/build --config Release
+```
 
 ---
 
 ## Running
 
-Place your legally acquired **Magical Tetris Challenge (USA)** ROM (`.z64`) in the project directory as `baserom.us.z64`, or place it in the `roms/` folder.
-
-Launch the game:
-```bash
-./run.sh
-```
+Place your legally acquired **Magical Tetris Challenge (USA)** ROM (`.z64`) in the same directory as the executable, or inside a `roms/` folder:
+- Accepted names: `baserom.us.z64`, `Magical Tetris Challenge (USA).z64`, `baserom.z64`, or passed directly as a command-line argument.
 
 ---
 
@@ -76,12 +77,12 @@ Launch the game:
 | **Z Trigger (Hard Drop)** | Z |
 | **Start Button** | Enter |
 | **L Trigger / R Trigger** | Q / E |
-| **C-Buttons (Up / Down / Left / Right)** | I / K / J / L |
+| **C-Buttons** | I / K / J / L |
 | **Fullscreen Toggle** | Alt + Enter |
 
 ### Gamepad
 
-Directly supports any SDL2-compatible controller (Xbox, DualShock/DualSense, Switch Pro Controller, etc.) automatically mapped to the original N64 controller layout.
+Plug and play support for standard controllers (Xbox, PlayStation, Switch Pro Controller) automatically mapped to the original N64 controller layout.
 
 ---
 

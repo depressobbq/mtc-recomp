@@ -8,6 +8,14 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
+if (WIN32)
+    add_compile_definitions(NOMINMAX _DISABLE_CONSTEXPR_MUTEX_CONSTRUCTOR)
+endif()
+
+if (MSVC)
+    add_compile_options(/bigobj)
+endif()
+
 set(MTC_RECOMP_DIR  "${CMAKE_CURRENT_SOURCE_DIR}/../recomp" CACHE PATH "Folder with RecompiledFuncs")
 set(MTC_RUNTIME_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../lib/N64ModernRuntime" CACHE PATH "N64ModernRuntime path")
 set(MTC_RT64_DIR    "${CMAKE_CURRENT_SOURCE_DIR}/../lib/rt64" CACHE PATH "RT64 path" FORCE)
@@ -42,7 +50,7 @@ target_include_directories(MTCRecompiledFuncs PRIVATE
     "${MTC_RUNTIME_DIR}/ultramodern/include"
 )
 if (MSVC)
-    target_compile_options(MTCRecompiledFuncs PRIVATE /W0)
+    target_compile_options(MTCRecompiledFuncs PRIVATE /W0 /TP /bigobj)
 else()
     target_compile_options(MTCRecompiledFuncs PRIVATE -fno-strict-aliasing -Wno-everything)
 endif()
@@ -92,7 +100,7 @@ target_include_directories(MTCRecompiled PRIVATE
 )
 
 if (MSVC)
-    target_compile_options(MTCRecompiled PRIVATE /permissive-)
+    target_compile_options(MTCRecompiled PRIVATE /bigobj)
 else()
     if (CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|amd64|AMD64")
         set(MTC_SIMD_FLAGS -msse4.1)

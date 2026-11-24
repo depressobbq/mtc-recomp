@@ -223,7 +223,10 @@ namespace {
         SDL_SysWMinfo wmInfo;
         SDL_VERSION(&wmInfo.version);
         SDL_GetWindowWMInfo(window, &wmInfo);
-        return { .window = wmInfo.info.win.window, .thread_id = GetCurrentThreadId() };
+        ultramodern::renderer::WindowHandle wh{};
+        wh.window = wmInfo.info.win.window;
+        wh.thread_id = GetCurrentThreadId();
+        return wh;
 #else
         return window;
 #endif
