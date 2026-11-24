@@ -1,12 +1,39 @@
-# ROM files and game assets (never commit copyrighted ROM data)
+# ==============================================================================
+# Game ROMs & Extracted Assets (STRICTLY IGNORED - Do not distribute ROM data)
+# ==============================================================================
 *.z64
+*.Z64
 *.n64
+*.N64
 *.v64
-baserom.*
+*.V64
+*.rom
+*.ROM
+baserom*
+*baserom*
+base_rom*
 roms/
 mtc_data/
 
-# Build artifacts
+# ==============================================================================
+# Frame Captures, Screenshots, and Dumped Textures
+# ==============================================================================
+*.png
+*.jpg
+*.jpeg
+*.bmp
+*.tga
+frame_*
+new_frame_*
+screen*
+game_*
+test_spec*
+dumped_textures/
+textures/dump/
+
+# ==============================================================================
+# Build Artifacts & Binaries
+# ==============================================================================
 build/
 MTCRecomp/build/
 bin/
@@ -19,12 +46,15 @@ MTCRecompiled
 *.exe
 *.elf
 
-# Downloaded library dependencies (fetched via setup_dependencies.sh)
+# ==============================================================================
+# Third-Party Dependencies (Fetched automatically via setup_dependencies.sh)
+# ==============================================================================
 lib/rt64/
 lib/N64ModernRuntime/
 
-# Texture dumps and temporary debug files
-dumped_textures/
+# ==============================================================================
+# Editor & Temporary Files
+# ==============================================================================
 *.log
 *.swp
 *.bak

@@ -2,8 +2,6 @@
 
 A native PC port of **Magical Tetris Challenge** (Nintendo 64) created via static binary recompilation using the [N64Recomp](https://github.com/N64Recomp/N64Recomp) toolchain.
 
-![Magical Tetris Challenge Title Screen](docs/title_screen.png)
-
 ## Features
 
 - **Native Linux Executable:** High-performance, low-latency native execution without traditional N64 CPU emulation overhead.
