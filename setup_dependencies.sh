@@ -5,6 +5,9 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LIB_DIR="$SCRIPT_DIR/lib"
 PATCH_DIR="$SCRIPT_DIR/patches"
 
+# Ensure git does not reject directories due to ownership in CI
+git config --global --add safe.directory "*" 2>/dev/null || true
+
 mkdir -p "$LIB_DIR"
 
 # 1. N64ModernRuntime
@@ -27,8 +30,12 @@ RT64_DIR="$LIB_DIR/rt64"
 if [ ! -f "$RT64_DIR/CMakeLists.txt" ]; then
     echo "==> Cloning RT64..."
     git clone https://github.com/rt64/rt64.git "$RT64_DIR"
-    git -C "$RT64_DIR" checkout a80eb4174955014dd7855f6ae95b6554e74a93bb
+    git -C "$RT64_DIR" checkout 23cab603c4f9f4a8b369b38e036f1aa484603878
     git -C "$RT64_DIR" submodule update --init --recursive
+    if [ -f "$PATCH_DIR/rt64-depth-fix.patch" ]; then
+        echo "==> Applying rt64-depth-fix.patch..."
+        git -C "$RT64_DIR" apply --ignore-whitespace --whitespace=nowarn "$PATCH_DIR/rt64-depth-fix.patch"
+    fi
     if [ -f "$PATCH_DIR/rt64-s2dex.patch" ]; then
         echo "==> Applying rt64-s2dex.patch..."
         git -C "$RT64_DIR" apply --ignore-whitespace --whitespace=nowarn "$PATCH_DIR/rt64-s2dex.patch"
