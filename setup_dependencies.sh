@@ -32,13 +32,9 @@ if [ ! -f "$RT64_DIR/CMakeLists.txt" ]; then
     git clone https://github.com/rt64/rt64.git "$RT64_DIR"
     git -C "$RT64_DIR" checkout 23cab603c4f9f4a8b369b38e036f1aa484603878
     git -C "$RT64_DIR" submodule update --init --recursive
-    if [ -f "$PATCH_DIR/rt64-depth-fix.patch" ]; then
-        echo "==> Applying rt64-depth-fix.patch..."
-        git -C "$RT64_DIR" apply --ignore-whitespace --whitespace=nowarn "$PATCH_DIR/rt64-depth-fix.patch"
-    fi
-    if [ -f "$PATCH_DIR/rt64-s2dex.patch" ]; then
-        echo "==> Applying rt64-s2dex.patch..."
-        git -C "$RT64_DIR" apply --ignore-whitespace --whitespace=nowarn "$PATCH_DIR/rt64-s2dex.patch"
+    if [ -f "$PATCH_DIR/rt64.patch" ]; then
+        echo "==> Applying rt64.patch..."
+        git -C "$RT64_DIR" apply --ignore-whitespace --whitespace=nowarn "$PATCH_DIR/rt64.patch"
     fi
 else
     echo "==> RT64 already present at $RT64_DIR"
