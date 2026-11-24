@@ -34,15 +34,14 @@ jobs:
         run: |
           set -o pipefail
           cmake --build MTCRecomp/build --config Release --target MTCRecompiled --parallel 2>&1 | tee build.log || {
-            echo "### Build Failed" >> "$GITHUB_STEP_SUMMARY"
-            echo "#### Error lines:" >> "$GITHUB_STEP_SUMMARY"
-            echo '```' >> "$GITHUB_STEP_SUMMARY"
-            grep -E -i -C 2 '(error |fatal|failed|lnk[0-9]+|c[0-9]{4}:)' build.log | head -n 60 >> "$GITHUB_STEP_SUMMARY" || true
-            echo '```' >> "$GITHUB_STEP_SUMMARY"
-            echo "#### Last 80 lines of output:" >> "$GITHUB_STEP_SUMMARY"
-            echo '```' >> "$GITHUB_STEP_SUMMARY"
-            tail -n 80 build.log >> "$GITHUB_STEP_SUMMARY"
-            echo '```' >> "$GITHUB_STEP_SUMMARY"
+            SUMMARY_FILE="${GITHUB_STEP_SUMMARY//\\//}"
+            echo "### Build Failed" >> "$SUMMARY_FILE" 2>/dev/null || true
+            grep -E -i '(error |fatal|lnk[0-9]{4}|c[0-9]{4}:)' build.log | head -n 20 | while IFS= read -r line; do
+              echo "::error title=BuildError::$line"
+            done
+            tail -n 20 build.log | while IFS= read -r line; do
+              echo "::warning title=Tail::$line"
+            done
             exit 1
           }
 
