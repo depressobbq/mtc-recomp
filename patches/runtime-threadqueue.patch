@@ -1,3 +1,49 @@
+diff --git a/librecomp/CMakeLists.txt b/librecomp/CMakeLists.txt
+index 716d48b..fed5660 100644
+--- a/librecomp/CMakeLists.txt
++++ b/librecomp/CMakeLists.txt
+@@ -50,11 +50,13 @@ target_include_directories(librecomp PRIVATE
+     "${CMAKE_CURRENT_SOURCE_DIR}/include/librecomp"
+ )
+ 
+-target_compile_options(librecomp PRIVATE
+-#    -Wall
+-#    -Wextra
+-    -Wno-unused-parameter
+-)
++if (NOT MSVC)
++    target_compile_options(librecomp PRIVATE
++    #    -Wall
++    #    -Wextra
++        -Wno-unused-parameter
++    )
++endif()
+ 
+ if (WIN32)
+     add_compile_definitions(NOMINMAX)
+diff --git a/ultramodern/CMakeLists.txt b/ultramodern/CMakeLists.txt
+index 5593172..70d4706 100644
+--- a/ultramodern/CMakeLists.txt
++++ b/ultramodern/CMakeLists.txt
+@@ -30,11 +30,13 @@ target_include_directories(ultramodern PUBLIC
+     "${PROJECT_SOURCE_DIR}/../thirdparty/sse2neon"
+ )
+ 
+-target_compile_options(ultramodern PRIVATE
+-#    -Wall
+-#    -Wextra
+-    -Wno-unused-parameter
+-)
++if (NOT MSVC)
++    target_compile_options(ultramodern PRIVATE
++    #    -Wall
++    #    -Wextra
++        -Wno-unused-parameter
++    )
++endif()
+ 
+ if (WIN32)
+     add_compile_definitions(NOMINMAX)
 diff --git a/ultramodern/src/threadqueue.cpp b/ultramodern/src/threadqueue.cpp
 index f9c0fa1..d421acf 100644
 --- a/ultramodern/src/threadqueue.cpp
